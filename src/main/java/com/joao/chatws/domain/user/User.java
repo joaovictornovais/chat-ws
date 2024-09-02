@@ -36,10 +36,6 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "receiver")
     private Set<Friendship> receiver = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(name = "friends", joinColumns = @JoinColumn())
-    private Set<User> friends = new HashSet<>();
-
     public User(RegisterRequestDTO data) {
         role = UserRole.USER;
         BeanUtils.copyProperties(data, this);
