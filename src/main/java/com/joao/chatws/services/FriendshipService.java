@@ -1,6 +1,6 @@
 package com.joao.chatws.services;
 
-import com.joao.chatws.domain.friendship.AcceptFriendshipRequestDTO;
+import com.joao.chatws.domain.friendship.ManageFriendshipRequestDTO;
 import com.joao.chatws.domain.friendship.Friendship;
 import com.joao.chatws.domain.friendship.SendFriendshipRequestDTO;
 import com.joao.chatws.domain.user.User;
@@ -58,9 +58,9 @@ public class FriendshipService {
         return friendshipRepository.findBySenderAndReceiver(user2, user1);
     }
 
-    public void acceptFriendshipRequest(AcceptFriendshipRequestDTO data) {
+    public void acceptFriendshipRequest(ManageFriendshipRequestDTO data) {
         Friendship friendship = findById(data.friendshipId());
-        User receiver = userService.findByEmail(data.receiver());
+        User receiver = userService.findByEmail(data.userEmail());
 
         if (friendship.getReceiver() != receiver) {
             throw new FriendshipRequestNotForUserException
@@ -70,6 +70,17 @@ public class FriendshipService {
         friendship.setAccepted(true);
         friendship.setAcceptedDate(LocalDate.now());
         friendshipRepository.save(friendship);
+    }
+
+    public void declineFriendshipRequest(ManageFriendshipRequestDTO data) {
+        Friendship friendship = findById(data.friendshipId());
+        User user = userService.findByEmail(data.userEmail());
+
+        if (!friendship.getSender().equals(user) && !friendship.getReceiver().equals(user)) {
+            throw new FriendshipRequestNotForUserException("You can't manage this friendship request");
+        }
+
+        friendshipRepository.deleteById(friendship.getId());
     }
 
     public Friendship findById(UUID id) {

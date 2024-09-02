@@ -1,6 +1,6 @@
 package com.joao.chatws.controllers;
 
-import com.joao.chatws.domain.friendship.AcceptFriendshipRequestDTO;
+import com.joao.chatws.domain.friendship.ManageFriendshipRequestDTO;
 import com.joao.chatws.domain.friendship.SendFriendshipRequestDTO;
 import com.joao.chatws.services.FriendshipService;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +27,15 @@ public class FriendshipController {
 
     @PostMapping("/{friendshipId}")
     public ResponseEntity<Void> acceptRequest(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID friendshipId) {
-        AcceptFriendshipRequestDTO data = new AcceptFriendshipRequestDTO(userDetails.getUsername(), friendshipId);
+        ManageFriendshipRequestDTO data = new ManageFriendshipRequestDTO(userDetails.getUsername(), friendshipId);
         friendshipService.acceptFriendshipRequest(data);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @DeleteMapping("/{friendshipId}")
+    public ResponseEntity<Void> declineRequest(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID friendshipId) {
+        ManageFriendshipRequestDTO data = new ManageFriendshipRequestDTO(userDetails.getUsername(), friendshipId);
+        friendshipService.declineFriendshipRequest(data);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
